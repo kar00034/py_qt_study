@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QWidget, QApplication, QTableWidgetItem, QAbstractIt
 class PushRadioUI(QWidget):
     def __init__(self):
         super().__init__()
-        self.ui = uic.loadUi("pusb_radio_btn.ui")
+        self.ui = uic.loadUi("push_radio_btn.ui")
         self.ui.show()
         #버튼 클릭
         self.ui.btn_ok.clicked.connect(self.clickok)
