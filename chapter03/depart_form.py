@@ -4,6 +4,17 @@ from PyQt5.QtWidgets import QWidget, QApplication, QAbstractItemView, QHeaderVie
     QMessageBox
 
 
+def create_table(table=None, data=None):
+    table.setHorizontalHeaderLabels(data)
+    # row단위 선택
+    table.setSelectionBehavior(QAbstractItemView.SelectRows)
+    # 수정불가능
+    table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+    # 균일한 간격으로 재배치
+    table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+    return table
+
+
 class DepartUI(QWidget):
 
     def __init__(self):
@@ -11,20 +22,14 @@ class DepartUI(QWidget):
         self.ui = uic.loadUi("dept_form.ui")
         self.ui.show()
 
-        self.ui.tableWidget.setHorizontalHeaderLabels(["부서번호", "부서명", "위치"])
-        # row단위 선택
-        self.ui.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
-        # 수정불가능
-        self.ui.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # 균일한 간격으로 재배치
-        self.ui.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table = create_table(table=self.ui.tableWidget, data=("부서번호", "부서명", "위치"))
 
         # slot/signal
         self.ui.btn_add.clicked.connect(self.add_item)
         self.ui.btn_init.clicked.connect(self.init_item)
 
         # 마우스 우클릭시 메뉴
-        self.set_context_menu(self.ui.tableWidget)
+        self.set_context_menu(self.table)
 
         data = [(1, "마케팅", 8), (2, "개발", 10), (3, "인사", 20)]
         self.load_data(data)
@@ -32,11 +37,11 @@ class DepartUI(QWidget):
     def load_data(self, data):
         for idx, (no, name, floor) in enumerate(data):
             item_no, item_name, item_floor = self.create_item(floor, name, no)
-            nextIdx = self.ui.tableWidget.rowCount()
-            self.ui.tableWidget.insertRow(nextIdx)
-            self.ui.tableWidget.setItem(nextIdx, 0, item_no)
-            self.ui.tableWidget.setItem(nextIdx, 1, item_name)
-            self.ui.tableWidget.setItem(nextIdx, 2, item_floor)
+            nextIdx = self.table.rowCount()
+            self.table.insertRow(nextIdx)
+            self.table.setItem(nextIdx, 0, item_no)
+            self.table.setItem(nextIdx, 1, item_name)
+            self.table.setItem(nextIdx, 2, item_floor)
 
     def set_context_menu(self, tv):
         tv.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -50,25 +55,25 @@ class DepartUI(QWidget):
     def __update(self):
         QMessageBox.information(self, 'Update', "확인", QMessageBox.Ok)
         item_no, item_name, item_floor = self.get_item_form_le()
-        selectionIdxs = self.ui.tableWidget.selectedIndexes()[0]
-        self.ui.tableWidget.setItem(selectionIdxs.row(), 0, item_no)
-        self.ui.tableWidget.setItem(selectionIdxs.row(), 1, item_name)
-        self.ui.tableWidget.setItem(selectionIdxs.row(), 2, item_floor)
+        selectionIdxs = self.table.selectedIndexes()[0]
+        self.table.setItem(selectionIdxs.row(), 0, item_no)
+        self.table.setItem(selectionIdxs.row(), 1, item_name)
+        self.table.setItem(selectionIdxs.row(), 2, item_floor)
 
     def __delete(self):
         QMessageBox.information(self, 'Delete', "확인", QMessageBox.Ok)
-        selectionIdxs = self.ui.tableWidget.selectedIndexes()[0]
+        selectionIdxs = self.table.selectedIndexes()[0]
         print(selectionIdxs.row(), " ", selectionIdxs.column())
-        self.ui.tableWidget.removeRow(selectionIdxs.row())
+        self.table.removeRow(selectionIdxs.row())
 
     def add_item(self):
         item_no, item_name, item_floor = self.get_item_form_le()
-        currentIdx = self.ui.tableWidget.rowCount()
+        currentIdx = self.table.rowCount()
         # print(type(currentIdx))
-        self.ui.tableWidget.insertRow(currentIdx)
-        self.ui.tableWidget.setItem(currentIdx, 0, item_no)
-        self.ui.tableWidget.setItem(currentIdx, 1, item_name)
-        self.ui.tableWidget.setItem(currentIdx, 2, item_floor)
+        self.table.insertRow(currentIdx)
+        self.table.setItem(currentIdx, 0, item_no)
+        self.table.setItem(currentIdx, 1, item_name)
+        self.table.setItem(currentIdx, 2, item_floor)
         self.init_item()
 
     def get_item_form_le(self):
